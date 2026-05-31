@@ -1,0 +1,93 @@
+{
+  "model_name": "logistic_regression",
+  "eda_summary": {
+    "p2p_rows": 2466068,
+    "trans_rows": 8444107,
+    "fraud_count": 2013,
+    "fraud_rate": 0.0008162791942476849,
+    "unique_senders": 50097,
+    "unique_recipients": 50097,
+    "mean_amount": 13433.460940983785,
+    "median_amount": 148.55,
+    "fraud_mean_amount": 26035.649145553904,
+    "nonfraud_mean_amount": 13423.16563310478,
+    "top_merchant_types": {
+      "Groceries": 2531775,
+      "Housekeeping": 1690424,
+      "Education": 1266509,
+      "Entertainment": 1265599,
+      "Financial Institution": 845032,
+      "Transport": 844768
+    }
+  },
+  "split_summary": {
+    "train": {
+      "rows": 767582,
+      "fraud_count": 623,
+      "fraud_rate": 0.0008116396684653887
+    },
+    "val": {
+      "rows": 410654,
+      "fraud_count": 346,
+      "fraud_rate": 0.0008425584555367779
+    },
+    "test": {
+      "rows": 438539,
+      "fraud_count": 327,
+      "fraud_rate": 0.0007456577408166662
+    }
+  },
+  "selected_threshold": 0.9995019359188565,
+  "threshold_selection": {
+    "precision": 0.825065274151436,
+    "recall": 0.9132947976878613
+  },
+  "validation_metrics": {
+    "roc_auc": 0.9973568284048397,
+    "average_precision": 0.8271347885843061,
+    "precision_at_threshold": 0.8229166666666666,
+    "recall_at_threshold": 0.9132947976878613,
+    "f1_at_threshold": 0.8657534246575342,
+    "positive_rate_at_threshold": 0.0009350937772431292
+  },
+  "test_metrics": {
+    "roc_auc": 0.9902832977299385,
+    "average_precision": 0.7385052618853061,
+    "precision_at_threshold": 0.7769230769230769,
+    "recall_at_threshold": 0.926605504587156,
+    "f1_at_threshold": 0.8451882845188284,
+    "positive_rate_at_threshold": 0.0008893165716162074
+  },
+  "feature_columns": [
+    "Amount",
+    "event_hour",
+    "event_dayofweek",
+    "event_day",
+    "is_weekend",
+    "amount_log1p",
+    "sender_prev_count",
+    "sender_prev_amount_sum",
+    "sender_prev_amount_mean",
+    "recipient_prev_count",
+    "recipient_prev_amount_sum",
+    "recipient_prev_amount_mean",
+    "sender_hours_since_prev",
+    "recipient_hours_since_prev",
+    "sender_prev_unique_recipients",
+    "recipient_prev_unique_senders",
+    "sender_trans_trans_count",
+    "sender_trans_trans_amount_mean",
+    "sender_trans_trans_amount_sum",
+    "sender_trans_trans_unique_merchants",
+    "sender_trans_trans_unique_merchant_types",
+    "sender_trans_trans_success_rate",
+    "recipient_trans_trans_count",
+    "recipient_trans_trans_amount_mean",
+    "recipient_trans_trans_amount_sum",
+    "recipient_trans_trans_unique_merchants",
+    "recipient_trans_trans_unique_merchant_types",
+    "recipient_trans_trans_success_rate",
+    "amount_to_sender_mean_ratio",
+    "amount_to_recipient_mean_ratio"
+  ]
+}
