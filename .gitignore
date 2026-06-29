@@ -1,5 +1,12 @@
 data/*.csv
 venv/
 src/__pycache__/
+dags/__pycache__/
 __pycache__/
 *.pyc
+.vscode/
+logs/
+airflow.cfg
+airflow.db
+simple_auth_manager_passwords.json.generated
+artifacts/intermediate/

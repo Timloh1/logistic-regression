@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
@@ -13,8 +14,10 @@ from sklearn.metrics import (
     roc_auc_score,
     roc_curve,
 )
+
 from src.config import RANDOM_STATE, MIN_RECALL, FIGURES_DIR
 from src.utils import save_figure
+
 
 def build_model() -> Pipeline:
     """Создание пайплайна: заполнение пропусков, масштабирование, логистическая регрессия"""
@@ -33,28 +36,94 @@ def build_model() -> Pipeline:
         ]
     )
 
-def find_best_threshold(y_true: np.ndarray, y_score: np.ndarray) -> tuple[float, dict]:
-    """Подбор порога по максимальной precision при recall >= MIN_RECALL"""
+
+def find_best_threshold(y_true: np.ndarray, y_score: np.ndarray, method: str = "distance_to_line") -> tuple[float, dict]:
+    """
+    Подбор порога различными методами.
+    method: 
+        'max_precision_at_recall' - максимизация precision при recall >= MIN_RECALL
+        'distance_to_line' - максимальное расстояние от прямой от (0,1) до (1,0) на PR-кривой до точки
+        'distance_to_ideal' - минимальное расстояние до идеальной точки (recall=1, precision=1)
+    """
     precision, recall, thresholds = precision_recall_curve(y_true, y_score)
+    
+    # Корректировка длин (precision и recall на 1 элемент длиннее thresholds)
+    if len(thresholds) == len(precision) - 1:
+        precision = precision[:-1]
+        recall = recall[:-1]
+    
+    # Удаляем возможные NaN и inf
+    mask = np.isfinite(precision) & np.isfinite(recall) & np.isfinite(thresholds)
+    precision = precision[mask]
+    recall = recall[mask]
+    thresholds = thresholds[mask]
+    
     best_threshold = 0.5
-    best_precision = -1.0
+    best_precision = 0.0
     best_recall = 0.0
+    
+    if method == "max_precision_at_recall":
+        for idx, thr in enumerate(thresholds):
+            p = float(precision[idx])
+            r = float(recall[idx])
+            if r >= MIN_RECALL and p > best_precision:
+                best_threshold = float(thr)
+                best_precision = p
+                best_recall = r
+        
+        # если ни один порог не дал нужного recall
+        if best_precision == 0.0:
+            # Находим порог с максимальным recall
+            best_idx = np.argmax(recall)
+            best_threshold = float(thresholds[best_idx])
+            best_precision = float(precision[best_idx])
+            best_recall = float(recall[best_idx])
+        
+        info = {
+            "method": "max_precision_at_recall",
+            "min_recall_constraint": MIN_RECALL,
+            "precision": best_precision,
+            "recall": best_recall,
+        }        
 
-    for idx, thr in enumerate(thresholds):
-        p = float(precision[idx + 1])
-        r = float(recall[idx + 1])
-        if r >= MIN_RECALL and p > best_precision:
-            best_threshold = float(thr)
-            best_precision = p
-            best_recall = r
+    elif method == "distance_to_line":
+        """
+        Метод максимального расстояния до прямой от (recall=0, precision=1) до (recall=1, precision=0).
+        Прямая: p = 1 - r  =>  r + p - 1 = 0
+        Расстояние: |r + p - 1| / sqrt(2)
+        """
+        distances = np.abs(recall + precision - 1) / np.sqrt(2)
+        best_idx = np.argmax(distances)
+        best_threshold = float(thresholds[best_idx])
+        best_precision = float(precision[best_idx])
+        best_recall = float(recall[best_idx])
+        
+        info = {
+            "method": "distance_to_line",
+            "threshold": best_threshold,
+            "precision": best_precision,
+            "recall": best_recall,
+        }     
 
-    if best_precision < 0:
-        fallback_idx = int(np.argmax(recall[:-1]))
-        best_threshold = float(thresholds[fallback_idx])
-        best_precision = float(precision[fallback_idx + 1])
-        best_recall = float(recall[fallback_idx + 1])
+    elif method == "distance_to_ideal":
+        distances = np.sqrt((1 - recall)**2 + (1 - precision)**2)
+        best_idx = np.argmin(distances)
+        best_threshold = float(thresholds[best_idx])
+        best_precision = float(precision[best_idx])
+        best_recall = float(recall[best_idx])
+        
+        info = {
+            "method": "distance_to_ideal",
+            "threshold": best_threshold,
+            "precision": best_precision,
+            "recall": best_recall,
+        }  
 
-    return best_threshold, {"precision": best_precision, "recall": best_recall}
+    else:
+        raise ValueError(f"Unknown method: {method}. Choose from: 'max_precision_at_recall', 'distance_to_line', 'distance_to_ideal'")
+    
+    return best_threshold, info
+
 
 def calculate_metrics(y_true: np.ndarray, y_score: np.ndarray, threshold: float) -> dict:
     """Расчёт основных метрик качества с фиксированным порогом"""
@@ -67,6 +136,7 @@ def calculate_metrics(y_true: np.ndarray, y_score: np.ndarray, threshold: float)
         "f1_at_threshold": float(f1_score(y_true, y_pred, zero_division=0)),
         "positive_rate_at_threshold": float(y_pred.mean()),
     }
+
 
 def plot_model_curves(y_test: np.ndarray, y_test_score: np.ndarray) -> None:
     """Построение Precision-Recall и ROC кривых для тестовой выборки"""
@@ -86,3 +156,4 @@ def plot_model_curves(y_test: np.ndarray, y_test_score: np.ndarray) -> None:
     ax.set_xlabel("False Positive Rate")
     ax.set_ylabel("True Positive Rate")
     save_figure(fig, FIGURES_DIR / "logistic_roc_curve.png")
+

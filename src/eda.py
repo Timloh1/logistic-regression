@@ -1,9 +1,9 @@
-from __future__ import annotations
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from src.config import FIGURES_DIR, REPORTS_DIR
 from src.utils import save_figure
+
 
 def run_eda(p2p_df: pd.DataFrame, trans_df: pd.DataFrame) -> dict:
     """Расчёт EDA-статистик, построение графиков, запись сводки"""

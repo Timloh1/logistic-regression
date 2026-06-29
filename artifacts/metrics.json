@@ -7,7 +7,7 @@
     "fraud_rate": 0.0008162791942476849,
     "unique_senders": 50097,
     "unique_recipients": 50097,
-    "mean_amount": 13433.460940983785,
+    "mean_amount": 13433.460940983792,
     "median_amount": 148.55,
     "fraud_mean_amount": 26035.649145553904,
     "nonfraud_mean_amount": 13423.16563310478,
@@ -37,26 +37,28 @@
       "fraud_rate": 0.0007456577408166662
     }
   },
-  "selected_threshold": 0.9995019359188565,
+  "selected_threshold": 0.9972977620826053,
   "threshold_selection": {
-    "precision": 0.825065274151436,
-    "recall": 0.9132947976878613
+    "method": "distance_to_line",
+    "threshold": 0.9972977620826053,
+    "precision": 0.8148148148148148,
+    "recall": 0.953757225433526
   },
   "validation_metrics": {
     "roc_auc": 0.9973568284048397,
-    "average_precision": 0.8271347885843061,
-    "precision_at_threshold": 0.8229166666666666,
-    "recall_at_threshold": 0.9132947976878613,
-    "f1_at_threshold": 0.8657534246575342,
-    "positive_rate_at_threshold": 0.0009350937772431292
+    "average_precision": 0.827134788584306,
+    "precision_at_threshold": 0.8148148148148148,
+    "recall_at_threshold": 0.953757225433526,
+    "f1_at_threshold": 0.8788282290279628,
+    "positive_rate_at_threshold": 0.000986231718186113
   },
   "test_metrics": {
     "roc_auc": 0.9902832977299385,
-    "average_precision": 0.7385052618853061,
-    "precision_at_threshold": 0.7769230769230769,
-    "recall_at_threshold": 0.926605504587156,
-    "f1_at_threshold": 0.8451882845188284,
-    "positive_rate_at_threshold": 0.0008893165716162074
+    "average_precision": 0.7385052618853062,
+    "precision_at_threshold": 0.7664233576642335,
+    "recall_at_threshold": 0.963302752293578,
+    "f1_at_threshold": 0.8536585365853658,
+    "positive_rate_at_threshold": 0.0009372028485493878
   },
   "feature_columns": [
     "Amount",

@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from src.config import WARMUP_END, TRAIN_END, VAL_END
 
+
 def assign_split_column(p2p_df: pd.DataFrame) -> pd.DataFrame:
     """Добавление колонки split (warmup/train/val/test) по времени"""
     result = p2p_df.copy()
@@ -17,6 +18,7 @@ def assign_split_column(p2p_df: pd.DataFrame) -> pd.DataFrame:
     ] = "val"
     result.loc[result["EventTime"] >= VAL_END, "split"] = "test"
     return result
+
 
 def add_features(p2p_df: pd.DataFrame, trans_df: pd.DataFrame) -> pd.DataFrame:
     """Генерация признаков: временные, исторические, профили отправителя/получателя"""
@@ -121,6 +123,7 @@ def add_features(p2p_df: pd.DataFrame, trans_df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return result
+
 
 def get_feature_columns(feature_df: pd.DataFrame) -> list[str]:
     """Список колонок-признаков (исключая мета-информацию и целевую переменную)"""
